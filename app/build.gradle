@@ -1,0 +1,71 @@
+apply plugin: 'com.android.application'
+
+android {
+
+
+    def globals = rootProject.extensions.getByName("ext")
+    compileSdkVersion globals.getAt("androidCompileSdkVersion")
+    buildToolsVersion globals.getAt("androidBuildToolsVersion")
+    def verName = globals.getAt("androidVersionName")
+
+    defaultConfig {
+
+        resConfigs "en"
+        vectorDrawables.useSupportLibrary = true
+        applicationId globals.getAt("androidApplicationId")
+        minSdkVersion globals.getAt("androidMinSdkVersion")
+        targetSdkVersion globals.getAt("androidTargetSdkVersion")
+        versionCode 1
+        versionName verName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    def libs = rootProject.ext.libs
+    // Dagger core
+    annotationProcessor libs.daggerCompiler
+    compile libs.dagger
+    // Dagger Android
+    annotationProcessor libs.daggerAndProcessor
+    compile libs.daggerSupport
+    // if you are not using support library, include this instead
+    compile libs.daggerAndroid
+
+    compile libs.supportv13
+    compile libs.supportv4
+    compile libs.appcompatv7
+    compile libs.constraintLayout
+    compile(libs.design) {
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
+
+    compile libs.rxJava
+    compile (libs.rxAndroid) {
+        exclude group: 'io.reactivex', module: 'rxjava'
+    }
+    compile(libs.retrofitRxJavaAdapter) {
+        exclude group: 'io.reactivex', module: 'rxjava'
+        exclude group: 'com.squareup.retrofit2', module: 'retrofit'
+    }
+
+    compile libs.retrofit
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    compile 'com.android.support:cardview-v7:26.1.0'
+}
